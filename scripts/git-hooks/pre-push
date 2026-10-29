@@ -1,0 +1,3 @@
+#!/bin/bash
+# 推送前本地门禁（安装：scripts/install_hooks.sh）
+exec "$(git rev-parse --show-toplevel)/scripts/ci_local.sh"

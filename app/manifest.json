@@ -1,0 +1,13 @@
+{
+  "name": "Marrow — AI时代技术科普阅读方法论",
+  "short_name": "Marrow",
+  "description": "把技术/科普书籍转化为可探索式交互学习工具",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1e293b",
+  "theme_color": "#1e293b",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}

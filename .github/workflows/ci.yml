@@ -1,0 +1,16 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  core-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 重算所有 core 的 verify 案例（core-as-code 门禁）
+        run: python3 scripts/validate_all_cores.py
+      - name: 单元测试（校验引擎/判定语义/组装对账，标准库实现）
+        run: python3 -m unittest discover -s tests -v
+      - name: 前端表达式守卫测试（存量 expr 零误伤 + 攻击向量全拒）
+        run: node tests/expr_guard.test.mjs

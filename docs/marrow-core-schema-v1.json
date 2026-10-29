@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Marrow Core Schema v1",
+  "description": "从Phase 0两份真实提取样本（LADR 3A-3C、5A）反推出的core标准格式。studio只认这一种格式，任意书籍的core接入studio前都需要整理成这个结构。",
+  "type": "object",
+  "required": ["topic", "source", "dictionary", "structure", "algorithms", "cases"],
+  "properties": {
+    "topic": { "type": "string", "description": "这个core覆盖的具体主题范围，建议收窄到章节级" },
+    "source": {
+      "type": "object",
+      "required": ["book", "section"],
+      "properties": {
+        "book": { "type": "string" },
+        "section": { "type": "string" },
+        "page_range": { "type": "string" }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft_generic", "extracted_unverified", "extracted_verified"],
+      "description": "draft_generic=非源文本生成，仅占位；extracted_unverified=已提取未人工核对；extracted_verified=已比对原文+算法已代码验证"
+    },
+    "dictionary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term", "definition", "source_ref"],
+        "properties": {
+          "term": { "type": "string" },
+          "definition": { "type": "string" },
+          "source_ref": { "type": "string", "description": "精确到定义/结论编号，不能只写章节" }
+        }
+      }
+    },
+    "structure": {
+      "type": "object",
+      "properties": {
+        "nodes": { "type": "array", "items": { "type": "string" } },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "relation"],
+            "properties": {
+              "from": { "type": "string" },
+              "to": { "type": "string" },
+              "relation": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "algorithms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "statement", "source_ref"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "statement": { "type": "string" },
+          "source_ref": { "type": "string" },
+          "executable": { "type": "boolean", "description": "是否已用代码实现并跑通验证，未验证前默认false" }
+        }
+      }
+    },
+    "explorable": {
+      "type": "array",
+      "description": "决定studio怎么把这个core渲染成交互控件。Phase 0证明了至少两种形态都要支持，不能只设计一种",
+      "items": {
+        "type": "object",
+        "required": ["type", "algorithm_ref"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["parametric", "definition_driven"],
+            "description": "parametric=连续参数可调（如矩阵四个数字拖动看几何变换）；definition_driven=按定义逐步构造过程（如逐列构造M(T)）"
+          },
+          "parameters": {
+            "type": "array",
+            "description": "仅type=parametric时使用",
+            "items": {
+              "type": "object",
+              "required": ["id", "range", "default"],
+              "properties": {
+                "id": { "type": "string" },
+                "range": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 },
+                "default": { "type": "number" }
+              }
+            }
+          },
+          "steps": {
+            "type": "array",
+            "description": "仅type=definition_driven时使用，描述构造过程的分步文案",
+            "items": { "type": "string" }
+          },
+          "outputs": {
+            "type": "array",
+            "description": "通用渲染器实际要显示和计算的内容——光有parameters和steps不够渲染引擎用，必须有可求值的表达式，渲染器才能做到不为每本书写专属代码。这是搭建通用渲染器时反推出来的补充字段",
+            "items": {
+              "type": "object",
+              "required": ["label", "expr"],
+              "properties": {
+                "label": { "type": "string" },
+                "expr": { "type": "string", "description": "用parameters里的id作为变量的可求值表达式" }
+              }
+            }
+          },
+          "algorithm_ref": { "type": "string", "description": "对应algorithms数组里的某个id，studio靠这个id取得可执行逻辑" }
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "content", "source_ref", "role", "is_verbatim"],
+        "properties": {
+          "id": { "type": "string" },
+          "content": { "type": "string" },
+          "source_ref": { "type": "string" },
+          "role": {
+            "type": "string",
+            "enum": ["validation", "practice"],
+            "description": "validation=原文给出解，用于模型验证（对应第4/5步）；practice=原文不给解，留给用户在studio里实战应用（对应第6步）——这是Phase 0新发现的区分，之前的草稿没有"
+          },
+          "is_verbatim": { "type": "boolean", "description": "期望结果是否为原文直接给出的数值/结论，而非AI推算" },
+          "computed_check": { "type": "string", "description": "可选，记录代码验证的结果摘要" }
+        }
+      }
+    },
+    "related_cores": {
+      "type": "array",
+      "description": "支持知识扩散式学习——指向其他core里相关联的内容，供studio做跨core导航。这是Phase 0里例5.9和最早通用demo的旋转矩阵自然重合后，反推出的必要字段",
+      "items": {
+        "type": "object",
+        "required": ["core_id", "via"],
+        "properties": {
+          "core_id": { "type": "string" },
+          "via": { "type": "string", "description": "两者具体是怎么关联的，不能只写\"相关\"" }
+        }
+      }
+    }
+  }
+}

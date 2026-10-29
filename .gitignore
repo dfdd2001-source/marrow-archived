@@ -1,0 +1,8 @@
+.DS_Store
+__pycache__/
+*.pyc
+.env
+harness/sources/*
+!harness/sources/README.md
+harness/results/
+data/

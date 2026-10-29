@@ -1,0 +1,266 @@
+{
+  "topic": "演示节 D1：2×2 矩阵与线性变换",
+  "source": {
+    "book": "Marrow 演示内容（工程师手写，无版权限制）",
+    "section": "演示节 D1：2×2 矩阵与线性变换",
+    "page_range": ""
+  },
+  "status": "extracted_verified",
+  "verification_note": "工程师手写演示内容（verified_by=engineer）；全部 verify 声明经校验引擎重算通过（CI 门禁对象）。",
+  "dictionary": [
+    {
+      "term": "线性变换（linear transformation）",
+      "definition": "满足 T(u+v) = Tu + Tv 且 T(cv) = c·Tv 的映射 T，它把向量变成向量、保持加法与数乘结构。",
+      "source_ref": "定义D1.1",
+      "verified_by": "engineer"
+    },
+    {
+      "term": "矩阵表示（matrix of a linear map）",
+      "definition": "把 T 作用在标准基的每个基向量上，把所得向量按列排成矩阵 M(T)；之后 Tv = M(T)·v 就是普通的矩阵乘向量。",
+      "source_ref": "定义D1.2",
+      "verified_by": "engineer"
+    },
+    {
+      "term": "行列式（determinant）",
+      "definition": "2×2 矩阵 [[a,b],[c,d]] 的行列式为 ad − bc；det = 0 当且仅当矩阵不可逆（变换把平面压扁）。",
+      "source_ref": "定义D1.3",
+      "verified_by": "engineer"
+    }
+  ],
+  "structure": {
+    "nodes": [
+      "定义D1.1: 线性变换",
+      "定义D1.2: 矩阵表示",
+      "定义D1.3: 行列式",
+      "结论D1.4: 2×2 可逆判据",
+      "例D1.1: 特征向量验证"
+    ],
+    "edges": [
+      {
+        "from": "定义D1.2: 矩阵表示",
+        "to": "定义D1.1: 线性变换",
+        "relation": "矩阵是线性变换在选定基下的坐标实现"
+      },
+      {
+        "from": "定义D1.3: 行列式",
+        "to": "定义D1.2: 矩阵表示",
+        "relation": "行列式定义在矩阵表示之上"
+      },
+      {
+        "from": "结论D1.4: 2×2 可逆判据",
+        "to": "定义D1.3: 行列式",
+        "relation": "可逆 ⟺ det ≠ 0，是行列式的直接推论"
+      },
+      {
+        "from": "例D1.1: 特征向量验证",
+        "to": "定义D1.2: 矩阵表示",
+        "relation": "特征向量验证使用 M(T)·v 的矩阵乘法"
+      }
+    ]
+  },
+  "algorithms": [
+    {
+      "id": "alg_d1_matvec",
+      "name": "矩阵-向量乘法",
+      "statement": "对 M=[[a,b],[c,d]] 与 v=(x,y)：Mv = (ax+by, cx+dy)。这就是线性变换作用在向量上的坐标计算。",
+      "source_ref": "结论D1.4",
+      "executable": true,
+      "verified_by": "engineer"
+    },
+    {
+      "id": "alg_d1_det",
+      "name": "2×2 行列式与可逆判据",
+      "statement": "det [[a,b],[c,d]] = ad − bc；det ≠ 0 ⟺ 可逆（det=0 时平面被压扁，信息丢失不可逆）。",
+      "source_ref": "结论D1.5",
+      "executable": true,
+      "verified_by": "engineer"
+    }
+  ],
+  "cases": [
+    {
+      "id": "case_d1_1",
+      "content": "求 T(x,y) = (2x+y, 3y) 在标准基下的矩阵 M(T)，并验证 (1,1) 是它的一个特征向量。",
+      "source_ref": "例D1.1",
+      "role": "validation",
+      "is_verbatim": true,
+      "verify": {
+        "function": "matrix_of_linear_map",
+        "args": {
+          "T_coeffs": [
+            [
+              2,
+              1
+            ],
+            [
+              0,
+              3
+            ]
+          ],
+          "domain_dim": 2
+        },
+        "expected": [
+          [
+            2,
+            1
+          ],
+          [
+            0,
+            3
+          ]
+        ]
+      },
+      "verified_by": "engineer"
+    },
+    {
+      "id": "case_d1_2",
+      "content": "承接例D1.1：M(T)·(1,1) = (3,3) = 3·(1,1)，所以 (1,1) 是 λ=3 的特征向量。",
+      "source_ref": "例D1.2",
+      "role": "validation",
+      "is_verbatim": true,
+      "verify": {
+        "function": "eigenvector_check",
+        "args": {
+          "T_coeffs": [
+            [
+              2,
+              1
+            ],
+            [
+              0,
+              3
+            ]
+          ],
+          "v": [
+            1,
+            1
+          ],
+          "lam": 3
+        },
+        "expected_equal": true
+      },
+      "verified_by": "engineer"
+    }
+  ],
+  "cases_practice": [
+    {
+      "id": "ex_d1_1",
+      "content": "求矩阵 [[3,1],[0,2]] 的行列式，并判断它是否可逆。",
+      "source_ref": "习题1",
+      "role": "practice",
+      "is_verbatim": false,
+      "candidate_answer": "det = 3·2 − 1·0 = 6 ≠ 0，可逆。",
+      "verify": {
+        "function": "determinant",
+        "args": {
+          "M": [
+            [
+              3,
+              1
+            ],
+            [
+              0,
+              2
+            ]
+          ]
+        },
+        "expected": 6
+      },
+      "answer_verified": true,
+      "verified_by": "engineer"
+    },
+    {
+      "id": "ex_d1_2",
+      "content": "T(x,y) = (x+y, y)。(2,1) 是 T 的特征向量吗？若是给出 λ；若不是，说明理由。",
+      "source_ref": "习题2",
+      "role": "practice",
+      "is_verbatim": false,
+      "candidate_answer": "不是。Mv = (2+1, 1) = (3,1)。若 Mv = λv = λ(2,1)，则需 3 = 2λ 且 1 = λ，两式矛盾（λ=1.5 给第二分量 1.5≠1），所以 (2,1) 不是特征向量。",
+      "verify": {
+        "function": "eigenvector_check",
+        "args": {
+          "T_coeffs": [
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "v": [
+            2,
+            1
+          ],
+          "lam": 1.5
+        },
+        "expected_equal": false
+      },
+      "answer_verified": true,
+      "verified_by": "engineer"
+    }
+  ],
+  "explorable": [
+    {
+      "type": "parametric",
+      "viz": "mat2d",
+      "algorithm_ref": "alg_d1_det",
+      "verified_by": "engineer",
+      "note": "交互由工程师编写（演示内容）：网格变形与行列式徽章是该节算法的直接实现",
+      "steps": [
+        "① 拖动滑杆改变矩阵 M 的四个元素，看网格如何被拉伸",
+        "② 徽章实时显示 det：单位正方形被缩放 |det| 倍",
+        "③ 把 det 拖到 0：平面被压扁——矩阵不可逆",
+        "④ det < 0 时定向翻转"
+      ],
+      "parameters": [
+        {
+          "id": "a",
+          "range": [
+            -3,
+            3
+          ],
+          "default": 2,
+          "step": 0.5
+        },
+        {
+          "id": "b",
+          "range": [
+            -3,
+            3
+          ],
+          "default": 1,
+          "step": 0.5
+        },
+        {
+          "id": "c",
+          "range": [
+            -3,
+            3
+          ],
+          "default": 0,
+          "step": 0.5
+        },
+        {
+          "id": "d",
+          "range": [
+            -3,
+            3
+          ],
+          "default": 3,
+          "step": 0.5
+        }
+      ],
+      "outputs": [
+        {
+          "label": "det M = ad − bc",
+          "expr": "a*d-b*c"
+        },
+        {
+          "label": "可逆指示（1=可逆）",
+          "expr": "(a*d-b*c)===0 ? 0 : 1"
+        }
+      ]
+    }
+  ]
+}

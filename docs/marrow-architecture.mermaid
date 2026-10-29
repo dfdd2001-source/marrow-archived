@@ -1,0 +1,26 @@
+graph TB
+  subgraph 客户端
+    PWA["Studio PWA<br/>app.js 通用渲染器"]
+  end
+  subgraph 后端服务
+    API["FastAPI"]
+    VAL["校验引擎<br/>verifiers.py 注册表"]
+    DB[("PostgreSQL<br/>cores / core_versions<br/>user_progress / case_attempts")]
+  end
+  HARNESS["Harness<br/>(现阶段: Claude人工代劳<br/>后续: Codex等可插拔)"]
+  REVIEWER["审核者"]
+  USER["最终用户"]
+
+  USER --> PWA
+  PWA -->|"GET /api/cores"| API
+  PWA -->|"GET /api/cores/:id"| API
+  PWA -->|"POST /api/progress"| API
+  PWA -->|"POST /api/cases/:id/attempt"| API
+  API <--> DB
+
+  HARNESS -->|"POST /api/cores/:id/versions"| API
+  API --> VAL
+  VAL -->|"validation_summary"| API
+
+  REVIEWER -->|"GET /api/cores/:id/versions"| API
+  REVIEWER -->|"POST .../approve 或 /reject"| API

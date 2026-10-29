@@ -1,0 +1,30 @@
+sequenceDiagram
+    participant H as Harness
+    participant A as API
+    participant V as 校验引擎
+    participant D as 数据库
+    participant R as 审核者
+    participant U as 用户(Studio)
+
+    H->>A: POST /cores/:id/versions (提取内容)
+    A->>V: 对cases里带verify声明的条目逐条运行
+    V-->>A: validation_summary (PASS/FAIL/SKIP)
+    A->>D: 写入core_versions(review_status=pending, validation_result)
+
+    R->>A: GET /cores/:id/versions
+    A->>D: 查询该core全部版本
+    D-->>A: 版本列表 + 各自校验结果
+    A-->>R: 展示pending版本，标出PASS/FAIL
+
+    alt 校验全过 + 人工确认无误
+        R->>A: POST .../approve
+        A->>D: UPDATE cores.active_version_id
+    else 校验有FAIL 或 人工判断有问题
+        R->>A: POST .../reject
+        A->>D: UPDATE review_status=rejected（不影响线上）
+    end
+
+    U->>A: GET /cores/:id
+    A->>D: 按active_version_id查询当前生效内容
+    D-->>A: core数据(JSONB)
+    A-->>U: 返回内容，前端按schema通用渲染
