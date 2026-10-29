@@ -29,7 +29,8 @@ const PARAMS = ["a", "b", "c", "d", "ux", "uy", "vx", "vy", "bx", "by", "v1x", "
   "v2x", "v2y", "m11", "m12", "m22", "lambda", "s1", "s2", "x", "y", "z"];
 
 test(`存量表达式全部通过守卫（共 ${exprs.length} 个）`, () => {
-  assert.ok(exprs.length >= 40, `应至少收集到 40 个表达式，实际 ${exprs.length}`);
+  // 零误伤是不变量；条数随仓库内容变化（私有全量 70+，公开演示 2），不设大阈值
+  assert.ok(exprs.length >= 1, `应至少收集到 1 个表达式`);
   for (const { expr, names } of exprs) {
     assert.equal(guard.check(expr, names), true, `存量表达式被误拒: ${expr}`);
   }
