@@ -58,6 +58,12 @@ cp .env.example .env            # 填入 AGNES_API_KEY
 
 GitHub Actions workflow 同样就绪（公开仓库 Actions 免费）。
 
+## 路线图
+
+- [ ] OpenStax（CC 授权，可合法分发）章节作为第二个演示 core，演示"任意书"导入路径
+- [ ] 更多校验形状进入注册表（复数算术、更多矩阵分解…）
+- [ ] 发布页（GitHub Pages）托管静态 PWA
+
 ## 版权
 
 - 代码：MIT（见 LICENSE）
